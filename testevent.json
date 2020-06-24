@@ -1,0 +1,16 @@
+{
+    "event": {
+        "Records": [
+            {
+                "s3": {
+                    "bucket": {
+                        "name": "test"
+                    },
+                    "object": {
+                        "key": "testkey"
+                    }
+                }
+            }
+        ]
+    }
+}
