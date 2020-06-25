@@ -1,15 +1,15 @@
 resource "aws_lb" "test" {
-  name               = "test-lb-tf"
+  name               = "test-alb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = ["${aws_security_group.lb_sg.id}"]
-  subnets            = ["${aws_subnet.public.*.id}"]
+  security_groups    = [aws_security_group.sg-alb.id]
+  subnets            = [aws_subnet.prod-subnet-public-1.id]
 
   enable_deletion_protection = true
 
   access_logs {
-    bucket  = "${aws_s3_bucket.lb_logs.bucket}"
-    prefix  = "test-lb"
+    bucket  = aws_s3_bucket.kk-logs.bucket
+    prefix  = "alb-logs/"
     enabled = true
   }
 

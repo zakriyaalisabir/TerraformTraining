@@ -19,22 +19,32 @@ resource "aws_s3_bucket" "kk-target" {
 }
 
 
+resource "aws_s3_bucket" "kk-logs" {
+  bucket = "kk-logs"
+  acl    = "private"
+
+  tags = {
+    Name        = "kk-logs"
+    Environment = "Prod"
+  }
+}
+
 
 resource "aws_s3_bucket_notification" "my-trigger" {
-    bucket = "kk-source"
+  bucket = "kk-source"
 
-    lambda_function {
-        lambda_function_arn = "${aws_lambda_function.test_lambda.arn}"
-        events              = ["s3:ObjectCreated:*"]
-        filter_prefix       = ""
-        filter_suffix       = ".txt"
-    }
+  lambda_function {
+    lambda_function_arn = aws_lambda_function.test_lambda.arn
+    events              = ["s3:ObjectCreated:*"]
+    filter_prefix       = ""
+    filter_suffix       = ".txt"
+  }
 }
 
 resource "aws_lambda_permission" "test" {
   statement_id  = "AllowS3Invoke"
   action        = "lambda:InvokeFunction"
   function_name = "test_lambda"
-  principal = "s3.amazonaws.com"
-  source_arn = "arn:aws:s3:::kk-source"
+  principal     = "s3.amazonaws.com"
+  source_arn    = "arn:aws:s3:::kk-source"
 }

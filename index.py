@@ -7,7 +7,7 @@ def handler(event, context):
     file_key = event['Records'][0]['s3']['object']['key']
     # get the object
     obj = s3.get_object(Bucket=bucket_name, Key=file_key)
-    # get lines inside the files
+    # get contents of the file
     lines = obj['Body'].read().split(b'\n')
     print(lines)
     s3.put_object(Body=lines, Bucket='kk-target', Key='copied/'+file_key)

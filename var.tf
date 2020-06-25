@@ -3,11 +3,11 @@ variable "AWS_REGION" {
 }
 
 variable "EC2_USER" {
-    default = "kk-ec2"
+  default = "kk-ec2"
 }
 variable "AMI" {
   default = {
-    us-east-1 =  "ami-2757f631"
+    us-east-1 = "ami-2757f631"
   }
 }
 

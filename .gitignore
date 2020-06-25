@@ -1,2 +1,3 @@
 kk_key.pem
 .terraform/
+lambda_function.zip
