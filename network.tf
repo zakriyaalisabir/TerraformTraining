@@ -54,19 +54,21 @@ resource "aws_security_group" "ssh-allowed" {
 
 
 resource "aws_security_group" "sg-alb" {
+  name = "sg-alb"
   vpc_id = "${aws_vpc.prod-vpc.id}"
 
+  # Allow all outbound
   egress {
     from_port   = 0
     to_port     = 0
-    protocol    = -1
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
+  # Inbound HTTP from anywhere
   ingress {
-    from_port = 80
-    to_port   = 80
-    protocol  = "http"
+    from_port = var.alb_port
+    to_port   = var.alb_port
+    protocol  = "tcp"
     // This means, all ip address are allowed to ssh ! 
     // Do not do it in the production. 
     // Put your office or home address in it!
@@ -75,5 +77,24 @@ resource "aws_security_group" "sg-alb" {
 
   tags = {
     Name = "sg-alb"
+  }
+}
+
+resource "aws_security_group" "sg-asg" {
+  name = "sg-asg"
+  vpc_id = "${aws_vpc.prod-vpc.id}"
+
+  ingress = {
+    from_port = var.server_port
+    to_port   = var.server_port
+    protocol  = "http"
+    // This means, all ip address are allowed to ssh ! 
+    // Do not do it in the production. 
+    // Put your office or home address in it!
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "sg-asg"
   }
 }

@@ -7,6 +7,7 @@ resource "aws_instance" "web1" {
   vpc_security_group_ids = ["${aws_security_group.ssh-allowed.id}"]
   # the Public SSH key
   key_name = "kk_key"
+  user_data = "${file("userdata.sh")}"
   tags = {
     Name = "web1"
   }
@@ -18,8 +19,7 @@ resource "aws_instance" "web1" {
   }
 }
 
-
-
-
-
-
+output "public_ip" {
+  value       = aws_instance.web1.public_ip
+  description = "The public IP of the web server"
+}
