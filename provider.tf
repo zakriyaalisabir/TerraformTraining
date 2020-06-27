@@ -1,5 +1,5 @@
 # provider "aws" {
-#     region = "${var.AWS_REGION}"
+#     region = var.AWS_REGION
 #     shared_credentials_file = "~/.aws/credentials"
 #     profile = "465976519110"
 # }

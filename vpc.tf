@@ -11,7 +11,7 @@ resource "aws_vpc" "prod-vpc" {
 
 
 resource "aws_subnet" "prod-subnet-public-1" {
-  vpc_id                  = "${aws_vpc.prod-vpc.id}"
+  vpc_id                  = aws_vpc.prod-vpc.id
   cidr_block              = "10.0.0.0/26"
   map_public_ip_on_launch = "true" //it makes this a public subnet
   availability_zone       = "us-east-1a"
@@ -22,7 +22,7 @@ resource "aws_subnet" "prod-subnet-public-1" {
 
 
 resource "aws_subnet" "prod-subnet-public-2" {
-  vpc_id                  = "${aws_vpc.prod-vpc.id}"
+  vpc_id                  = aws_vpc.prod-vpc.id
   cidr_block              = "10.0.1.0/26"
   map_public_ip_on_launch = "true" //it makes this a public subnet
   availability_zone       = "us-east-1a"
@@ -32,7 +32,7 @@ resource "aws_subnet" "prod-subnet-public-2" {
 }
 
 resource "aws_subnet" "prod-subnet-private-1" {
-  vpc_id                  = "${aws_vpc.prod-vpc.id}"
+  vpc_id                  = aws_vpc.prod-vpc.id
   cidr_block              = "10.0.2.0/26"
   map_public_ip_on_launch = "false" //it makes this a private subnet
   availability_zone       = "us-east-1a"
@@ -43,7 +43,7 @@ resource "aws_subnet" "prod-subnet-private-1" {
 
 
 resource "aws_subnet" "prod-subnet-private-2" {
-  vpc_id                  = "${aws_vpc.prod-vpc.id}"
+  vpc_id                  = aws_vpc.prod-vpc.id
   cidr_block              = "10.0.3.0/26"
   map_public_ip_on_launch = "false" //it makes this a private subnet
   availability_zone       = "us-east-1a"

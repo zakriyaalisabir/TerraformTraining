@@ -1,5 +1,5 @@
 resource "aws_internet_gateway" "prod-igw" {
-  vpc_id = "${aws_vpc.prod-vpc.id}"
+  vpc_id = aws_vpc.prod-vpc.id
 
   tags = {
     Name = "prod-igw"
@@ -7,13 +7,13 @@ resource "aws_internet_gateway" "prod-igw" {
 }
 
 resource "aws_route_table" "prod-public-crt" {
-  vpc_id = "${aws_vpc.prod-vpc.id}"
+  vpc_id = aws_vpc.prod-vpc.id
 
   route {
     //associated subnet can reach everywhere
     cidr_block = "0.0.0.0/0"
     //CRT uses this IGW to reach internet
-    gateway_id = "${aws_internet_gateway.prod-igw.id}"
+    gateway_id = aws_internet_gateway.prod-igw.id
   }
 
   tags = {
@@ -22,13 +22,13 @@ resource "aws_route_table" "prod-public-crt" {
 }
 
 resource "aws_route_table_association" "prod-crta-public-subnet-1" {
-  subnet_id      = "${aws_subnet.prod-subnet-public-1.id}"
-  route_table_id = "${aws_route_table.prod-public-crt.id}"
+  subnet_id      = aws_subnet.prod-subnet-public-1.id
+  route_table_id = aws_route_table.prod-public-crt.id
 }
 
 
 resource "aws_security_group" "ssh-allowed" {
-  vpc_id = "${aws_vpc.prod-vpc.id}"
+  vpc_id = aws_vpc.prod-vpc.id
 
   egress {
     from_port   = 0
@@ -53,9 +53,9 @@ resource "aws_security_group" "ssh-allowed" {
 }
 
 
-resource "aws_security_group" "sg-alb" {
-  name = "sg-alb"
-  vpc_id = "${aws_vpc.prod-vpc.id}"
+resource "aws_security_group" "alb-sg" {
+  name = "alb-sg"
+  vpc_id = aws_vpc.prod-vpc.id
 
   # Allow all outbound
   egress {
@@ -76,18 +76,18 @@ resource "aws_security_group" "sg-alb" {
   }
 
   tags = {
-    Name = "sg-alb"
+    Name = "alb-sg"
   }
 }
 
-resource "aws_security_group" "sg-asg" {
-  name = "sg-asg"
-  vpc_id = "${aws_vpc.prod-vpc.id}"
+resource "aws_security_group" "asg-sg" {
+  name = "asg-sg"
+  vpc_id = aws_vpc.prod-vpc.id
 
-  ingress = {
+  ingress {
     from_port = var.server_port
     to_port   = var.server_port
-    protocol  = "http"
+    protocol  = "tcp"
     // This means, all ip address are allowed to ssh ! 
     // Do not do it in the production. 
     // Put your office or home address in it!
@@ -95,6 +95,6 @@ resource "aws_security_group" "sg-asg" {
   }
 
   tags = {
-    Name = "sg-asg"
+    Name = "asg-sg"
   }
 }

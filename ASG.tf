@@ -1,17 +1,17 @@
 # asg launch template
 resource "aws_launch_template" "test-template" {
   name_prefix   = "test-template"
-  image_id      = "${lookup(var.AMI, var.AWS_REGION)}"
+  image_id      = lookup(var.AMI, var.AWS_REGION)
   key_name = "kk_key"
   instance_type = "t2.micro"
-  security_group_names = ["${aws_security_group.sg-asg.name}"]
-  user_data = "${file("userdata.sh")}"
+  security_group_names = [aws_security_group.asg-sg.name]
+  user_data = base64encode(file("userdata.sh"))
 }
 
 # asg definition
 resource "aws_autoscaling_group" "test-asg" {
   name = "test-asg"
-  vpc_zone_identifier = ["${aws_subnet.prod-subnet-public-1.id}","${aws_subnet.prod-subnet-public-2.id}"]
+  vpc_zone_identifier = [aws_subnet.prod-subnet-public-1.id,aws_subnet.prod-subnet-public-2.id]
 
   availability_zones = ["us-east-1a"]
   desired_capacity   = 1
@@ -19,25 +19,20 @@ resource "aws_autoscaling_group" "test-asg" {
   min_size           = 1
 
   health_check_grace_period = 300
-  health_check_type = "ELB"
-  load_balancers = ["${aws_elb.alb.name}"]
+  health_check_type = "EC2"
+  load_balancers = [aws_lb.alb.name]
   force_delete = true
 
   launch_template {
-    id      = "${aws_launch_template.test-template.id}"
+    id      = aws_launch_template.test-template.id
     version = "$Latest"
-  }
-
-  tags = {
-    Name               = "test-asg"
-    propagate_at_launch = true
   }
 }
 
 # Scale up policy
 resource "aws_autoscaling_policy" "test_autoscaling_up_policy" {
   name = "test_autoscaling_up_policy"
-  autoscaling_group_name = "${aws_autoscaling_group.test-asg.name}"
+  autoscaling_group_name = aws_autoscaling_group.test-asg.name
   adjustment_type = "ChangeInCapacity"
   scaling_adjustment = 1
   cooldown = 300
@@ -57,17 +52,17 @@ resource "aws_cloudwatch_metric_alarm" "asg-alarm-up" {
   threshold = 20
 
   dimensions = {
-    AutoScalingGroupName = "${aws_autoscaling_group.test-asg.name}"
+    AutoScalingGroupName = aws_autoscaling_group.test-asg.name
   }
 
   actions_enabled = true
-  alarm_actions = ["${aws_autoscaling_policy.test_autoscaling_up_policy.arn}"]
+  alarm_actions = [aws_autoscaling_policy.test_autoscaling_up_policy.arn]
 }
 
 # Scale down policy
 resource "aws_autoscaling_policy" "test_autoscaling_down_policy" {
   name = "test_autoscaling_down_policy"
-  autoscaling_group_name = "${aws_autoscaling_group.test-asg.name}"
+  autoscaling_group_name = aws_autoscaling_group.test-asg.name
   adjustment_type = "ChangeInCapacity"
   scaling_adjustment = -1
   cooldown = 300
@@ -87,9 +82,9 @@ resource "aws_cloudwatch_metric_alarm" "asg-alarm-down" {
   threshold = 5
 
   dimensions = {
-    AutoScalingGroupName = "${aws_autoscaling_group.test-asg.name}"
+    AutoScalingGroupName = aws_autoscaling_group.test-asg.name
   }
 
   actions_enabled = true
-  alarm_actions = ["${aws_autoscaling_policy.test_autoscaling_down_policy.arn}"]
+  alarm_actions = [aws_autoscaling_policy.test_autoscaling_down_policy.arn]
 }
